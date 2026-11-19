@@ -7,6 +7,11 @@
   "background_color": "#f7f8fc",
   "theme_color": "#f7f8fc",
   "icons": [
-    { "src": "./assets/app-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+    {
+      "src": "./assets/app-icon.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }
