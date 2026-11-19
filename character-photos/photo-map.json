@@ -1,0 +1,34 @@
+{
+  "1": {
+    "name": "さくら",
+    "file": "character-photos/normalgirl.png"
+  },
+  "2": {
+    "name": "美咲",
+    "file": "character-photos/normalgirl.png"
+  },
+  "3": {
+    "name": "あかり",
+    "file": "character-photos/jiraikeigirl.png"
+  },
+  "4": {
+    "name": "ゆい",
+    "file": "character-photos/shortcutgirl.png"
+  },
+  "5": {
+    "name": "りな",
+    "file": "character-photos/olgirl.png"
+  },
+  "6": {
+    "name": "まな",
+    "file": "character-photos/jiraikeigirl.png"
+  },
+  "7": {
+    "name": "ほのか",
+    "file": "character-photos/normalgirl.png"
+  },
+  "8": {
+    "name": "千尋",
+    "file": "character-photos/olgirl.png"
+  }
+}
