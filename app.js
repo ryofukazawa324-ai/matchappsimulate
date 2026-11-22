@@ -71,24 +71,42 @@ function scriptReply(w,choice,m){
  const p=personaScripts[w.id];
  if(!p)return null;
  if(m.guard>=60)return p.cold;
- const turn=state.stage[w.id]?.talk||0;
- // ほのかさんは直前の話題に対して答える。話題を飛ばしたり同じ説明を繰り返さない。
- if(w.id===7){
-  if(/候補日|誘う/.test(choice))return p.invite;
-  if(/通話/.test(choice))return p.call;
-  if(/食べ物|お店/.test(choice))return p.food;
-  if(/エリア/.test(choice))return p.area;
-  if(/深掘り/.test(choice))return '最近はピンクや白を組み合わせることが多いです！小さなリボンのモチーフも作ってみたいなと思っています。';
-  if(/共感/.test(choice))return 'そうなんです！友達が喜んでくれたので、作ってよかったなって思いました☺️ 次は自分用にも作ろうかなと思っています。';
-  if(/経験も|自分の話|自分の好み/.test(choice))return '作る工程が好きなんですね！細かいパーツを組み合わせて形になっていくのって楽しいですよね。';
-  if(/相手の休日や趣味|日常|ペース|休日/.test(choice))return '休日は友達とカフェに行くことも多いですし、家でアクセサリーを作ることもあります！ディズニーに行くのも好きです。';
-  if(/プロフィールの共通点|短く挨拶|具体的に褒め/.test(choice))return p.open;
-  return turn>3?p.food:p.hobby;
+ const key=/候補日|誘う/.test(choice)?'invite':/通話/.test(choice)?'call':/食べ物|お店/.test(choice)?'food':/エリア|場所/.test(choice)?'area':/深掘り/.test(choice)?'depth':/共感/.test(choice)?'hobby':/経験も|自分の話|自分の好み/.test(choice)?'day':/プロフィールの共通点|短く挨拶|具体的に褒め/.test(choice)?'open':/日常|ペース|休日/.test(choice)?'day':/テンポ|趣味/.test(choice)?'hobby':'open';
+ const replies={
+  1:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite},
+  2:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite},
+  3:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite},
+  4:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite},
+  5:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite},
+  6:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite},
+  7:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite},
+  8:{open:p.open,day:p.day,hobby:p.hobby,depth:p.depth,food:p.food,area:p.area,call:p.call,invite:p.invite}
+ };
+ return replies[w.id]?.[key]||p.open;
+}
+function personaCallReply(w,choice,m,c){
+ const p=personaScripts[w.id]||{};
+ if(m.guard>=65)return p.cold||'今日は少し疲れているので、そろそろ失礼しますね。';
+ if(/趣味の話/.test(choice))return p.hobby||p.open;
+ if(/小さな出来事を共有/.test(choice)){
+  const lines={
+   1:'そういう日常の話っていいですね。私は最近、雰囲気のいいカフェを見つけて写真を撮れたのが嬉しかったです。',
+   2:'何気ない出来事を話せるのっていいですね。私はこの前の休みに温泉でゆっくりできて、少しリフレッシュしました。',
+   3:'そういう話聞くの好きです！私はこの前ライブに行って、帰ってからもずっと余韻に浸ってました。',
+   4:'何気ない話ができると少し緊張もほぐれますね。私は最近、読んだミステリー小説が面白かったです。',
+   5:'いいですね！私は最近、気になっていたお店に行けたのが嬉しかったです。おいしいものを見つけると誰かに話したくなります。',
+   6:'そういう日常の話、落ち着きますね。私は最近、ゲームの好きなキャラの絵が少し進んだのが嬉しかったです。',
+   8:'そういう小さな出来事を共有できるのはいいですね。私は最近、展示で照明の使い方が印象的な作品に出会いました。'
+  };
+  return lines[w.id]||p.day||p.open;
  }
- let key=/候補日|誘う/.test(choice)?'invite':/通話/.test(choice)?'call':/食べ物|お店/.test(choice)?'food':/エリア/.test(choice)?'area':/深掘り/.test(choice)?'depth':/共感/.test(choice)?'hobby':/経験も|自分の話|自分の好み/.test(choice)?'day':/プロフィールの共通点|短く挨拶|具体的に褒め/.test(choice)?'open':/日常|ペース|休日/.test(choice)?'day':/テンポ|趣味/.test(choice)?'hobby':'open';
- if(key==='open'&&turn>1)key='hobby';
- if(key==='hobby'&&turn>3)key='food';
- return p[key]||p.open;
+ if(/一つだけ聞き/.test(choice))return p.depth||p.hobby;
+ if(/共感/.test(choice))return p.hobby||p.open;
+ if(/一緒に行けそう/.test(choice))return p.area||p.food;
+ if(/会って話す/.test(choice))return p.invite||'そうですね。もう少し話してみて、タイミングが合えば会ってみたいです。';
+ if(/どう感じている/.test(choice))return '話しやすいと感じています。急がず、もう少しお互いのことを知れたら嬉しいです。';
+ if(/最後まで聞く|話題を軽く変える/.test(choice))return p.day||p.hobby||p.open;
+ return 'そうなんですね。';
 }
 
 
@@ -203,7 +221,7 @@ function callChoices(w,id){
  if(r<4)return ['相手の考えを一つだけ聞き、自分の考えも話す','相手の話に共感して少し自己開示する','過去の恋愛や結婚観を聞く','沈黙が怖くて質問を続ける'];
  return ['一緒に行けそうな場所やお店の話を軽くする','会って話すのも楽しそうと自然に伝える','今すぐ会う日を決めようと迫る','相手がどう感じているかを確認する'];
 }
-function renderCall(id){let w=women.find(x=>x.id===id),c=state.callSessions[id],round=c.round,choices=callChoices(w,id);openModal(`<div class="modal-head"><h2>30分通話シミュレーション</h2><button class="close" data-close>×</button></div><div class="call-screen"><img src="${photo(w)}"><h2>${w.name}</h2><p>通話中 ・ 30分の想定</p><div class="call-timer">残りラリー：${c.limit-round} / 6</div><div class="progress-wrap"><div class="progress-fill" style="width:${round/c.limit*100}%"></div></div><p>相手の反応を見ながら、会話を選んでください。</p></div><div style="margin-top:16px"><p class="section-note">踏み込みすぎず、安心感と会話意欲を育てましょう。</p><div class="choice-grid">${choices.map((x,i)=>`<button class="choice" data-callchoice="${i}">${x}</button>`).join('')}</div></div>`);$$('[data-callchoice]').forEach(b=>b.onclick=()=>callChoice(id,Number(b.dataset.callchoice)));}function callChoice(id,index){let w=women.find(x=>x.id===id),m=moodState(id),st=state.stage[id],c=state.callSessions[id],choice=callChoices(w,id)[index];if(!c||!choice)return;let good=/聞く|共有|共感|自己開示|軽く|自然に|確認して|受け止め|ペース/.test(choice),dateTalk=/一緒に行けそう|会って話す|どう感じているか/.test(choice),bad=/細かく質問|過去の恋愛|質問を続ける|迫る|長く続ける/.test(choice);if(good){m.safety+=6;m.interest+=5;m.affection+=3;m.datingIntent=Math.min(100,(m.datingIntent??15)+(dateTalk?9:2));m.guard=Math.max(0,m.guard-6);c.good++;}if(bad){m.safety-=9;m.interest-=8;m.affection-=4;m.guard+=13;c.bad++;}for(const k of ['safety','interest','affection','guard'])m[k]=Math.max(0,Math.min(100,m[k]));c.round++;state.chats[id]??=[];const callScript=personaScripts[w.id],callLine=m.guard>=65?'そうなんですね。そろそろ時間も大丈夫ですか？':w.id===7?(/趣味/.test(choice)?'最近はビーズとリボンを組み合わせた小物を作っています！色を考えるのも楽しいです。':/小さな出来事を共有/.test(choice)?'そうなんですね！そういう日常の話を聞くのも楽しいです。最近あった嬉しかったことってありますか？':/一つだけ聞き/.test(choice)?'私は、好きなことを一緒に楽しめる関係がいいなと思います。お互いの趣味を知れると嬉しいです！':/共感/.test(choice)?'わかってもらえて嬉しいです！話していると自然に笑顔になりますね☺️':/一緒に行けそう/.test(choice)?'吉祥寺にはかわいいカフェがたくさんありますよね。ゆっくりお話しできそうなお店がいいな。':/会って話す/.test(choice)?'私も実際に会ってお話しできたら楽しそうだなと思います！':/どう感じている/.test(choice)?'お話ししやすいなと思っています。もう少しお話ししてみたいです！':good?'そうなんですね！それ、もう少し聞いてみたいです☺️':'そうなんですね。'):good?(c.round<=2?callScript?.hobby:c.round<=4?callScript?.depth:callScript?.food):'そうなんですね。';state.chats[id].push({from:'them',text:callLine||'それ、わかります。話しやすいですね。'});if(m.guard>=78||m.interest<=18){st.closed=true;st.closeReason='call_cutoff';m.hidden='通話中に距離を置きたいと感じ、会話を続ける気持ちがなくなった';finishCall(id,false,true);return;}if(c.round>=c.limit){let passed=m.safety>=58&&m.interest>=55&&m.guard<=42&&m.affection>=48&&c.good>=4&&c.bad<=1;if(passed){st.call=true;m.interest=Math.min(100,m.interest+8);m.affection=Math.min(100,m.affection+6);m.hidden='通話して安心感が増し、実際に会ってみたいと思っている';}else if(m.guard>=65||m.interest<30){st.closed=true;st.closeReason='call_cutoff';m.hidden='通話を通して相性が合わないと感じ、見切っている';}finishCall(id,passed,st.closed);return;}renderCall(id);}
+function renderCall(id){let w=women.find(x=>x.id===id),c=state.callSessions[id],round=c.round,choices=callChoices(w,id);openModal(`<div class="modal-head"><h2>30分通話シミュレーション</h2><button class="close" data-close>×</button></div><div class="call-screen"><img src="${photo(w)}"><h2>${w.name}</h2><p>通話中 ・ 30分の想定</p><div class="call-timer">残りラリー：${c.limit-round} / 6</div><div class="progress-wrap"><div class="progress-fill" style="width:${round/c.limit*100}%"></div></div><p>相手の反応を見ながら、会話を選んでください。</p></div><div style="margin-top:16px"><p class="section-note">踏み込みすぎず、安心感と会話意欲を育てましょう。</p><div class="choice-grid">${choices.map((x,i)=>`<button class="choice" data-callchoice="${i}">${x}</button>`).join('')}</div></div>`);$$('[data-callchoice]').forEach(b=>b.onclick=()=>callChoice(id,Number(b.dataset.callchoice)));}function callChoice(id,index){let w=women.find(x=>x.id===id),m=moodState(id),st=state.stage[id],c=state.callSessions[id],choice=callChoices(w,id)[index];if(!c||!choice)return;let good=/聞く|共有|共感|自己開示|軽く|自然に|確認して|受け止め|ペース/.test(choice),dateTalk=/一緒に行けそう|会って話す|どう感じているか/.test(choice),bad=/細かく質問|過去の恋愛|質問を続ける|迫る|長く続ける/.test(choice);if(good){m.safety+=6;m.interest+=5;m.affection+=3;m.datingIntent=Math.min(100,(m.datingIntent??15)+(dateTalk?9:2));m.guard=Math.max(0,m.guard-6);c.good++;}if(bad){m.safety-=9;m.interest-=8;m.affection-=4;m.guard+=13;c.bad++;}for(const k of ['safety','interest','affection','guard'])m[k]=Math.max(0,Math.min(100,m[k]));c.round++;state.chats[id]??=[];const callLine=personaCallReply(w,choice,m,c);state.chats[id].push({from:'them',text:callLine||'それ、わかります。話しやすいですね。'});if(m.guard>=78||m.interest<=18){st.closed=true;st.closeReason='call_cutoff';m.hidden='通話中に距離を置きたいと感じ、会話を続ける気持ちがなくなった';finishCall(id,false,true);return;}if(c.round>=c.limit){let passed=m.safety>=58&&m.interest>=55&&m.guard<=42&&m.affection>=48&&c.good>=4&&c.bad<=1;if(passed){st.call=true;m.interest=Math.min(100,m.interest+8);m.affection=Math.min(100,m.affection+6);m.hidden='通話して安心感が増し、実際に会ってみたいと思っている';}else if(m.guard>=65||m.interest<30){st.closed=true;st.closeReason='call_cutoff';m.hidden='通話を通して相性が合わないと感じ、見切っている';}finishCall(id,passed,st.closed);return;}renderCall(id);}
 function finishCall(id,passed,closed){let w=women.find(x=>x.id===id),m=moodState(id),c=state.callSessions[id];renderChat(id);openModal(`<div class="modal-head"><h2>通話結果</h2><button class="close" data-close>×</button></div><div style="text-align:center;padding:18px"><div class="result-score" style="font-size:28px">${passed?'通話クリア！':closed?'関係終了':'今回はクリアならず'}</div><p class="section-note">${passed?'会話のテンポと安心感が合い、実際に会ってみたいと思ってもらえました。':closed?'踏み込み方や会話の相性から、相手が関係を続けない判断をしました。':'もう少し安心感を作る必要がありました。メッセージで関係を整えましょう。'}</p><div class="tip">30分想定・${c.round}ラリー ／ 安心感 ${m.safety}% ／ 警戒度 ${m.guard}%</div>${passed?'<button class="btn btn-primary" style="margin-top:16px" data-nextdate="'+id+'">デートの日程を決める</button>':closed?'<p class="section-note">この相手とのやりとりは終了です。進捗を個別リセットすると再挑戦できます。</p>':'<button class="btn btn-outline" style="margin-top:16px" data-continuechat="'+id+'">メッセージに戻る</button>'}</div>`);}
 function dateInvite(id){let w=women.find(x=>x.id===id),m=moodState(id),st=state.stage[id]||(state.stage[id]={matched:true,talk:0,call:false,date:false}),accepted=m.guard<=38&&m.safety>=58&&m.interest>=52&&m.affection>=48&&(m.datingIntent??15)>=48&&(st.call||st.talk>=4);if(accepted){st.date=true;m.hidden='実際に会ってみたいと思い、日程を調整したい';state.chats[id]??=[];state.chats[id].push({from:'them',text:personaScripts[id]?.invite||'いいですね！予定を調整しますね。候補日を確認してみます。'});openModal(`<div class="modal-head"><h2>日程調整へ</h2><button class="close" data-close>×</button></div><p>${w.name}さんから候補日が届きました。</p><div class="tip">会う約束が成立しました。候補日を確認して日程を決めましょう。</div><button class="btn btn-primary" style="margin-top:16px" data-finish="${id}">約束を確認する</button>`);}else{st.closed=true;st.closeReason='date_declined';m.hidden='今回は会う意思がなく、予定を理由に丁寧に断っている';state.chats[id]??=[];state.chats[id].push({from:'them',text:'今月は予定がいっぱい詰まっちゃってて、ごめんなさい。'});openModal(`<div class="modal-head"><h2>お誘いへの返答</h2><button class="close" data-close>×</button></div><p class="section-note">${w.name}さんから丁寧な返信がありました。</p><div class="tip">「今月は予定がいっぱい」という返答は、今回は会う意思がない間接的なお断りとして扱います。追いメッセージで挽回するルートはありません。</div><button class="btn btn-outline" style="margin-top:16px" data-continuechat="${id}">会話履歴を見る</button></div>`);}}
 function resetProgressPrompt(id){let w=women.find(x=>x.id===id);openModal(`<div class="modal-head"><h2>会話の進捗をリセット</h2><button class="close" data-close>×</button></div><p>${w.name}さんとの会話履歴・好意・安心感・警戒度・通話結果・進捗を初期状態に戻します。</p><p class="section-note">この相手だけが対象です。他の相手の進捗には影響しません。</p><button class="btn btn-outline" data-close>キャンセル</button><button class="btn btn-primary" style="margin-left:8px" data-confirm-reset="${id}">リセットする</button>`);}
