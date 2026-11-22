@@ -72,6 +72,19 @@ function scriptReply(w,choice,m){
  if(!p)return null;
  if(m.guard>=60)return p.cold;
  const turn=state.stage[w.id]?.talk||0;
+ // ほのかさんは直前の話題に対して答える。話題を飛ばしたり同じ説明を繰り返さない。
+ if(w.id===7){
+  if(/候補日|誘う/.test(choice))return p.invite;
+  if(/通話/.test(choice))return p.call;
+  if(/食べ物|お店/.test(choice))return p.food;
+  if(/エリア/.test(choice))return p.area;
+  if(/深掘り/.test(choice))return '最近はピンクや白を組み合わせることが多いです！小さなリボンのモチーフも作ってみたいなと思っています。';
+  if(/共感/.test(choice))return 'そうなんです！友達が喜んでくれたので、作ってよかったなって思いました☺️ 次は自分用にも作ろうかなと思っています。';
+  if(/経験も|自分の話|自分の好み/.test(choice))return '作る工程が好きなんですね！細かいパーツを組み合わせて形になっていくのって楽しいですよね。';
+  if(/相手の休日や趣味|日常|ペース|休日/.test(choice))return '休日は友達とカフェに行くことも多いですし、家でアクセサリーを作ることもあります！ディズニーに行くのも好きです。';
+  if(/プロフィールの共通点|短く挨拶|具体的に褒め/.test(choice))return p.open;
+  return turn>3?p.food:p.hobby;
+ }
  let key=/候補日|誘う/.test(choice)?'invite':/通話/.test(choice)?'call':/食べ物|お店/.test(choice)?'food':/エリア/.test(choice)?'area':/深掘り/.test(choice)?'depth':/共感/.test(choice)?'hobby':/経験も|自分の話|自分の好み/.test(choice)?'day':/プロフィールの共通点|短く挨拶|具体的に褒め/.test(choice)?'open':/日常|ペース|休日/.test(choice)?'day':/テンポ|趣味/.test(choice)?'hobby':'open';
  if(key==='open'&&turn>1)key='hobby';
  if(key==='hobby'&&turn>3)key='food';
